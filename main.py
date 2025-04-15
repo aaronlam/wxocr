@@ -12,8 +12,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# 配置相对路径
+base_dir = os.path.dirname(os.path.abspath(__file__))
+wxocr_path = os.path.join(base_dir, "wx", "opt", "wechat", "wxocr")
+wechat_path = os.path.join(base_dir, "wx", "opt", "wechat")
+
+# 确保目录存在
+if not os.path.exists(wxocr_path):
+    os.makedirs(wxocr_path)
+if not os.path.exists(wechat_path):
+    os.makedirs(wechat_path)
+
 app = Flask(__name__)
-wcocr.init("/app/wx/opt/wechat/wxocr", "/app/wx/opt/wechat")
+wcocr.init(wxocr_path, wechat_path)
 
 @app.route('/ocr', methods=['POST'])
 def ocr():
@@ -46,6 +57,7 @@ def ocr():
             # Process image with OCR
             logger.info("开始OCR处理")
             result = wcocr.ocr(filename)
+            logger.info(f"OCR处理结果: {result}")
             logger.info("OCR处理完成")
             return jsonify({'result': result})
 
